@@ -61,29 +61,29 @@ while True:
         if event.type == MOUSEBUTTONDOWN:
             for button in buttons:
                 if buttonDict[button][1].collidepoint(event.pos):
-                    if button == 'Play':
-                        boltAnim.play()
+                    if button == 'FF':
+                        boltAnim.fastForward(100)
+                    elif button == 'Loop':
+                        boltAnim.loop = not boltAnim.loop
+                    elif button == 'NextF':
+                        boltAnim.nextFrame()
+
                     elif button == 'Pause':
                         boltAnim.pause()
+                    elif button == 'Play':
+                        boltAnim.play()
+                    elif button == 'PrevF':
+                        boltAnim.prevFrame()
+                    elif button == 'Rev':
+                        boltAnim.reverse()
+                    elif button == 'Rew.':
+                        boltAnim.rewind(100)
                     elif button == 'Stop':
                         boltAnim.stop()
                     elif button == 'Toggle':
                         boltAnim.togglePause()
-                    elif button == 'Rew.':
-                        boltAnim.rewind(100)
-                    elif button == 'FF':
-                        boltAnim.fastForward(100)
-                    elif button == 'Loop':
-                        boltAnim.loop = not boltAnim.loop
-                    elif button == 'Rev':
-                        boltAnim.reverse()
                     elif button == 'Vis':
                         boltAnim.visibility = not boltAnim.visibility
-                    elif button == 'PrevF':
-                        boltAnim.prevFrame()
-                    elif button == 'NextF':
-                        boltAnim.nextFrame()
-
     # draw the animations to the screen
     #boltAnim.currentFrameNum = 3
     #print(boltAnim.currentFrameNum)
@@ -92,59 +92,77 @@ while True:
         windowSurface.blit(buttonDict[button][0], buttonDict[button][1])
 
     # draw the info text
-    stateSurf = BASICFONT.render('State: %s' % boltAnim.state, True, WHITE)
+    stateSurf = BASICFONT.render(f'State: {boltAnim.state}', True, WHITE)
     stateRect = stateSurf.get_rect()
     stateRect.topleft = (4, 130)
     windowSurface.blit(stateSurf, stateRect)
 
-    elapsedSurf = BASICFONT.render('Elapsed: %s' % boltAnim.elapsed, True, WHITE)
+    elapsedSurf = BASICFONT.render(f'Elapsed: {boltAnim.elapsed}', True, WHITE)
     elapsedRect = elapsedSurf.get_rect()
     elapsedRect.topleft = (150, 130)
     windowSurface.blit(elapsedSurf, elapsedRect)
 
-    curFrameSurf = BASICFONT.render('Cur Frame Num: %s' % boltAnim.currentFrameNum, True, WHITE)
+    curFrameSurf = BASICFONT.render(
+        f'Cur Frame Num: {boltAnim.currentFrameNum}', True, WHITE
+    )
     curFrameRect = curFrameSurf.get_rect()
     curFrameRect.topleft = (380, 130)
     windowSurface.blit(curFrameSurf, curFrameRect)
 
-    loopSurf = BASICFONT.render('Looping: %s' % boltAnim.loop, True, WHITE)
+    loopSurf = BASICFONT.render(f'Looping: {boltAnim.loop}', True, WHITE)
     loopRect = loopSurf.get_rect()
     loopRect.topleft = (4, 150)
     windowSurface.blit(loopSurf, loopRect)
 
-    visSurf = BASICFONT.render('Vis: %s' % boltAnim.visibility, True, WHITE)
+    visSurf = BASICFONT.render(f'Vis: {boltAnim.visibility}', True, WHITE)
     visRect = visSurf.get_rect()
     visRect.topleft = (150, 150)
     windowSurface.blit(visSurf, visRect)
 
     rightNow = time.time()
 
-    timeSurf = BASICFONT.render('Current Time: %s' % rightNow, True, WHITE)
+    timeSurf = BASICFONT.render(f'Current Time: {rightNow}', True, WHITE)
     timeRect = timeSurf.get_rect()
     timeRect.topleft = (4, 170)
     windowSurface.blit(timeSurf, timeRect)
 
-    playTimeSurf = BASICFONT.render('Play Start Time: %s' % boltAnim._playingStartTime, True, WHITE)
+    playTimeSurf = BASICFONT.render(
+        f'Play Start Time: {boltAnim._playingStartTime}', True, WHITE
+    )
     playTimeRect = playTimeSurf.get_rect()
     playTimeRect.topleft = (4, 190)
     windowSurface.blit(playTimeSurf, playTimeRect)
 
-    pauseTimeSurf = BASICFONT.render('Pause Start Time: %s' % boltAnim._pausedStartTime, True, WHITE)
+    pauseTimeSurf = BASICFONT.render(
+        f'Pause Start Time: {boltAnim._pausedStartTime}', True, WHITE
+    )
     pauseTimeRect = pauseTimeSurf.get_rect()
     pauseTimeRect.topleft = (4, 210)
     windowSurface.blit(pauseTimeSurf, pauseTimeRect)
 
-    diffTimeSurf = BASICFONT.render('Play - Pause Time: %s' % (boltAnim._playingStartTime - boltAnim._pausedStartTime), True, WHITE)
+    diffTimeSurf = BASICFONT.render(
+        f'Play - Pause Time: {boltAnim._playingStartTime - boltAnim._pausedStartTime}',
+        True,
+        WHITE,
+    )
     diffTimeRect = diffTimeSurf.get_rect()
     diffTimeRect.topleft = (4, 230)
     windowSurface.blit(diffTimeSurf, diffTimeRect)
 
-    diff2TimeSurf = BASICFONT.render('Current - Play Time: %s' % (rightNow - boltAnim._playingStartTime), True, WHITE)
+    diff2TimeSurf = BASICFONT.render(
+        f'Current - Play Time: {rightNow - boltAnim._playingStartTime}',
+        True,
+        WHITE,
+    )
     diff2TimeRect = diff2TimeSurf.get_rect()
     diff2TimeRect.topleft = (4, 250)
     windowSurface.blit(diff2TimeSurf, diff2TimeRect)
 
-    diff3TimeSurf = BASICFONT.render('Current - Pause Time: %s' % (rightNow - boltAnim._pausedStartTime), True, WHITE)
+    diff3TimeSurf = BASICFONT.render(
+        f'Current - Pause Time: {rightNow - boltAnim._pausedStartTime}',
+        True,
+        WHITE,
+    )
     diff3TimeRect = diff3TimeSurf.get_rect()
     diff3TimeRect.topleft = (4, 270)
     windowSurface.blit(diff3TimeSurf, diff3TimeRect)

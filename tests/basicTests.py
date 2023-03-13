@@ -17,13 +17,15 @@ BOLT_WIDTH, BOLT_HEIGHT = pygame.image.load('bolt1.png').get_size()
 
 def getTestAnimObj():
     # Returns a standard PygAnimation object.
-    frames = [('bolt%s.png' % (i), BOLT_DURATIONS) for i in range(1, NUM_BOLT_IMAGES + 1)]
+    frames = [
+        (f'bolt{i}.png', BOLT_DURATIONS) for i in range(1, NUM_BOLT_IMAGES + 1)
+    ]
     return pyganim.PygAnimation(frames)
 
 
 def compareSurfaces(surf1, surf2):
     if surf1.get_size() != surf2.get_size():
-        return 'Surfaces have different sizes: %s and %s' % (surf1.get_size(), surf2.get_size())
+        return f'Surfaces have different sizes: {surf1.get_size()} and {surf2.get_size()}'
 
     px1 = pygame.PixelArray(surf1)
     px2 = pygame.PixelArray(surf2)
@@ -37,7 +39,7 @@ def compareSurfaces(surf1, surf2):
             if color1 != color2:
                 del px1
                 del px2
-                return 'Pixel at %s, %s is different: %s and %s' % (x, y, color1, color2)
+                return f'Pixel at {x}, {y} is different: {color1} and {color2}'
     return None # on success, return None
 
 
@@ -57,21 +59,16 @@ class TestTestImages(unittest.TestCase):
                         10: 'e9a41735e799ebb7caafc32ac7e8310dc4bd9742'}
 
         for i in range(1, NUM_BOLT_IMAGES + 1):
-            boltFile = open('bolt%s.png' % i, 'rb')
-            s = hashlib.sha1(boltFile.read())
-            boltFile.close()
+            with open(f'bolt{i}.png', 'rb') as boltFile:
+                s = hashlib.sha1(boltFile.read())
             self.assertEqual(s.hexdigest(), boltSha1Sums[i])
 
-        # test animated gif
-        gifFile = open('banana.gif', 'rb')
-        s = hashlib.sha1(gifFile.read())
-        gifFile.close()
+        with open('banana.gif', 'rb') as gifFile:
+            s = hashlib.sha1(gifFile.read())
         self.assertEqual(s.hexdigest(), '65137061474887dfa0f183f2bc118a3e52fc353e')
 
-        # test sprite sheet
-        spritesheetFile = open('smokeSpritesheet.png', 'rb')
-        s = hashlib.sha1(spritesheetFile.read())
-        spritesheetFile.close()
+        with open('smokeSpritesheet.png', 'rb') as spritesheetFile:
+            s = hashlib.sha1(spritesheetFile.read())
         self.assertEqual(s.hexdigest(), '566cdeb39ffa26e1fb4e0486a16e22de7ac9f6c4')
 
         # TODO - add code that checks the individual smoke spritesheet images
@@ -81,7 +78,7 @@ class TestTestImages(unittest.TestCase):
 class TestGeneral(unittest.TestCase):
     def test_constructor(self):
         # Test ctor with filenames
-        frames = [('bolt%s.png' % (i), BOLT_DURATIONS) for i in range(1, 11)]
+        frames = [(f'bolt{i}.png', BOLT_DURATIONS) for i in range(1, 11)]
         animObj = pyganim.PygAnimation(frames)
         self.assertEqual(animObj._state, pyganim.STOPPED)
         self.assertEqual(animObj._loop, True)
@@ -91,7 +88,10 @@ class TestGeneral(unittest.TestCase):
         self.assertEqual(len(animObj._durations), NUM_BOLT_IMAGES)
 
         # Test ctor with pygame.Surface objects
-        frames = [(pygame.image.load('bolt%s.png' % (i)), BOLT_DURATIONS) for i in range(1, 11)]
+        frames = [
+            (pygame.image.load(f'bolt{i}.png'), BOLT_DURATIONS)
+            for i in range(1, 11)
+        ]
         animObj = pyganim.PygAnimation(frames)
         self.assertEqual(animObj._state, pyganim.STOPPED)
         self.assertEqual(animObj._loop, True)
@@ -164,7 +164,7 @@ class TestGeneral(unittest.TestCase):
                 surf.fill(pygame.Color('black'))
                 animObj.blit(surf, dest)
 
-                image = pygame.image.load('bolt%s.png' % i)
+                image = pygame.image.load(f'bolt{i}.png')
                 orig = pygame.Surface((BOLT_WIDTH, BOLT_HEIGHT))
                 orig.fill(pygame.Color('black'))
                 orig.blit(image, dest)
@@ -185,7 +185,7 @@ class TestGeneral(unittest.TestCase):
                 surf.fill(pygame.Color('black'))
                 animObj.blitFrameNum(frame, surf, dest)
 
-                image = pygame.image.load('bolt%s.png' % frame)
+                image = pygame.image.load(f'bolt{frame}.png')
                 orig = pygame.Surface((BOLT_WIDTH, BOLT_HEIGHT))
                 orig.fill(pygame.Color('black'))
                 orig.blit(image, dest)
@@ -206,7 +206,7 @@ class TestGeneral(unittest.TestCase):
                 animObj.blitFrameAtTime(timeSetting, surf, dest)
                 timeSetting += BOLT_DURATIONS
 
-                image = pygame.image.load('bolt%s.png' % i)
+                image = pygame.image.load(f'bolt{i}.png')
                 orig = pygame.Surface((BOLT_WIDTH, BOLT_HEIGHT))
                 orig.fill(pygame.Color('black'))
                 orig.blit(image, dest)
@@ -237,7 +237,7 @@ class TestGeneral(unittest.TestCase):
 
         for i in range(NUM_BOLT_IMAGES):
             frame = animObj.getFrame(i)
-            image = pygame.image.load('bolt%s.png' % (i + 1))
+            image = pygame.image.load(f'bolt{i + 1}.png')
             self.assertEqual(None, compareSurfaces(frame, image))
 
 
@@ -246,7 +246,7 @@ class TestGeneral(unittest.TestCase):
 
         for i in range(NUM_BOLT_IMAGES):
             frame = animObj.getCurrentFrame()
-            image = pygame.image.load('bolt%s.png' % (i + 1))
+            image = pygame.image.load(f'bolt{i + 1}.png')
             self.assertEqual(None, compareSurfaces(frame, image))
 
             animObj.nextFrame()
@@ -266,25 +266,25 @@ class TestGeneral(unittest.TestCase):
         expectedFrameNum = 0
         self.assertEqual(expectedFrameNum, animObj.currentFrameNum)
         # test nextFrame()
-        for i in range(NUM_BOLT_IMAGES * 2):
+        for _ in range(NUM_BOLT_IMAGES * 2):
             animObj.nextFrame()
             expectedFrameNum = (expectedFrameNum + 1) % len(animObj._images)
             self.assertEqual(expectedFrameNum, animObj.currentFrameNum)
 
         # test prevFrame()
-        for i in range(NUM_BOLT_IMAGES * 2):
+        for _ in range(NUM_BOLT_IMAGES * 2):
             animObj.prevFrame()
             expectedFrameNum = (expectedFrameNum - 1) % len(animObj._images)
             self.assertEqual(expectedFrameNum, animObj.currentFrameNum)
 
         # test nextFrame() with jump argument
-        for i in range(NUM_BOLT_IMAGES * 2):
+        for _ in range(NUM_BOLT_IMAGES * 2):
             animObj.nextFrame(3)
             expectedFrameNum = (expectedFrameNum + 3) % len(animObj._images)
             self.assertEqual(expectedFrameNum, animObj.currentFrameNum)
 
         # test prevFrame() with jump argument
-        for i in range(NUM_BOLT_IMAGES * 2):
+        for _ in range(NUM_BOLT_IMAGES * 2):
             animObj.prevFrame(3)
             expectedFrameNum = (expectedFrameNum - 3) % len(animObj._images)
             self.assertEqual(expectedFrameNum, animObj.currentFrameNum)

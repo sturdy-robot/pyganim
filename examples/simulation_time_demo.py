@@ -2,6 +2,7 @@
 This example shows how Pyganim can be used with "simulation time", instead of the actual system clock time as returned by time.time()
 """
 
+
 import sys
 import os
 sys.path.append(os.path.abspath('..'))
@@ -23,7 +24,10 @@ pygame.display.set_caption('Pyganim Simulation Clock Demo')
 animTypes = 'back_walk front_walk left_walk'.split()
 animObjs = {}
 for animType in animTypes:
-    imagesAndDurations = [('gameimages/crono_%s.%s.gif' % (animType, str(num).rjust(3, '0')), 1) for num in range(6)] # since we are not using the real system clock, "1" here is not "1 millisecond" but 1 step in the simulation clock
+    imagesAndDurations = [
+        (f"gameimages/crono_{animType}.{str(num).rjust(3, '0')}.gif", 1)
+        for num in range(6)
+    ]
     animObjs[animType] = pyganim.PygAnimation(imagesAndDurations)
 
 # create the right-facing sprites by copying and flipping the left-facing sprites
@@ -105,10 +109,14 @@ while True:
 
     # draw character
     x, y, direction = getPositionAtTime(simulationTime)
-    animObjs[direction + '_walk'].blit(windowSurface, (x, y))
+    animObjs[f'{direction}_walk'].blit(windowSurface, (x, y))
 
     # draw instructions
-    instructionSurf = BASICFONT.render('Drag slider to see different points of the simulation. Simulation time: %s' % (simulationTime), True, WHITE)
+    instructionSurf = BASICFONT.render(
+        f'Drag slider to see different points of the simulation. Simulation time: {simulationTime}',
+        True,
+        WHITE,
+    )
     instructionRect = instructionSurf.get_rect()
     instructionRect.bottomleft = (10, WINDOWHEIGHT - 10)
     windowSurface.blit(instructionSurf, instructionRect)
