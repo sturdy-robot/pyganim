@@ -101,10 +101,9 @@ def get_images_from_sprite_sheet(filename, width=None, height=None, rows=None, c
     returned_surfaces = []
     for rect in rects:
         # create Surface with width/height in rect
-        surf = pygame.Surface((rect[2], rect[3]), 0,
-                              sheet_image).convert_alpha()
-        surf.blit(sheet_image, (0, 0), rect, pygame.BLEND_RGBA_ADD)
-        returned_surfaces.append(surf)
+        sheet_image.set_clip(rect)
+        sprite = sheet_image.subsurface(sheet_image.get_clip())
+        returned_surfaces.append(sprite)
 
     return returned_surfaces
 
